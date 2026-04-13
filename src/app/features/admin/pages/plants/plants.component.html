@@ -1,0 +1,172 @@
+
+<div class="p-8 space-y-6">
+<app-plant-form [showForm]="showModal"  (close)="closeModal()" (save)="savePlant($event)" [plantToUpdate]="selectedPlant" ></app-plant-form>
+  <!-- Header -->
+  <div>
+    <h1 class="text-4xl font-bold text-gray-900 mb-2">
+      {{ language?.() === 'en' ? 'Plants' : 'النباتات' }}
+    </h1>
+    <p class="text-gray-600">
+      {{ language?.() === 'en' ? 'Manage medicinal plants database' : 'إدارة قاعدة بيانات النباتات الطبية' }}
+    </p>
+  </div>
+
+  <!-- Search and Actions -->
+<div class="flex flex-col md:flex-row gap-4">
+  <div class="flex-1 relative">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (ngModelChange)="filterPlants($event)"
+      [placeholder]="language?.() === 'en' ? 'Search plants...' : 'ابحث عن النباتات...'"
+      class="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
+      [class.border-amber-400]="noResults"
+      [class.focus:ring-amber-500]="noResults"
+    />
+
+    <!-- AI Search hint — appears inside input on the right when no results -->
+    <button
+      *ngIf="noResults"
+      (click)="semanticAiSearch()"
+      title="Try AI-powered search"
+     [ngClass]="language?.() === 'ar'  ? 'left-3' : 'right-3'"
+      class="absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-amber-50 border border-amber-300 text-amber-700 text-xs font-semibold cursor-pointer transition-all hover:bg-amber-100"
+
+      >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+      </svg>
+      {{ language?.() === 'en' ? 'Try AI Search' : 'بحث ذكي' }}
+    </button>
+  </div>
+
+  <button
+    (click)="addPlant()"
+    class="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold cursor-pointer border-none transition-all hover:bg-green-700"
+  >
+    {{ language?.() === 'en' ? '+ Add New Plant' : '+ إضافة نبات جديد' }}
+  </button>
+</div>
+
+  <!-- Plants Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div
+      *ngFor="let plant of displayedPlants"
+      class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all p-6 space-y-4"
+    >
+
+      <!-- Plant Header -->
+<div class="flex items-start gap-4">
+  <img
+    [src]="plant.imageUrl"
+    [alt]="plant.name"
+    class="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+    onerror="this.src='https://placehold.co/56x56/dcfce7/16a34a?text=🌿'"
+  />
+  <div class="flex-1">
+    <h3 class="font-bold text-lg text-gray-900">
+      {{ language?.() === 'en' ? plant.name : plant.name }}
+    </h3>
+    <p class="text-sm text-gray-600 italic">{{ plant.scientificName }}</p>
+  </div>
+</div>
+
+<!-- Description -->
+<p class="text-sm text-gray-700 leading-relaxed">
+  {{ language?.() === 'en' ? plant.description : plant.description}}
+</p>
+
+<!-- Common Names -->
+<div class="space-y-2">
+  <span class="text-xs font-semibold text-gray-600 uppercase">
+    {{ language?.() === 'en' ? 'Common Names:' : 'الأسماء الشائعة:' }}
+  </span>
+  <div class="flex flex-wrap gap-2">
+    <span
+      *ngFor="let cn of plant.commonNames"
+      class="inline-block bg-green-100 text-green-700 px-2 py-1 rounded text-xs"
+    >
+      {{ cn}}
+    </span>
+  </div>
+</div>
+
+      <!-- Similar Plants -->
+      <div *ngIf="plant.similarPlants&&plant.similarPlants.length > 0" class="space-y-2">
+        <span class="text-xs font-semibold text-gray-600 uppercase">
+          {{ language?.() === 'en' ? 'Similar Plants:' : 'نباتات مشابهة:' }}
+        </span>
+        <div class="space-y-1">
+          <div
+            *ngFor="let sp of plant.similarPlants"
+            class="bg-gray-50 p-2 rounded text-xs"
+          >
+            <span class="font-semibold text-gray-900 block">{{ sp.name }}</span>
+            <span class="text-gray-600">{{ sp.reason }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-2 pt-4">
+        <button
+          (click)="editPlant(plant)"
+          class="flex-1 py-2 rounded font-semibold cursor-pointer border-none transition-all bg-green-100 text-green-700 hover:bg-green-200"
+        >
+          {{ language?.() === 'en' ? 'Edit' : 'تعديل' }}
+        </button>
+        <button
+          (click)="deletePlant(plant.id)"
+          class="flex-1 py-2 rounded font-semibold cursor-pointer border-none transition-all bg-red-100 text-red-700 hover:bg-red-200"
+        >
+          {{ language?.() === 'en' ? 'Delete' : 'حذف' }}
+        </button>
+
+        <button
+          (click)="reembed(plant.id)"
+          class="flex-1 py-2 rounded font-semibold cursor-pointer border-none transition-all bg-red-100 text-red-700 hover:bg-red-200"
+        >
+          {{ language?.() === 'en' ? 'Rembed' : 'Rembed' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+<div 
+  class="flex items-center justify-center gap-4 mt-6"
+  [class.flex-row-reverse]="language?.() === 'ar'"
+>
+
+  <!-- Previous -->
+  <button
+    (click)="previousPage()"
+    class="flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 transition disabled:opacity-40"
+    [disabled]="currentPage === 0"
+  >
+  {{ '←'}}
+  </button>
+
+  <!-- Page number -->
+  <span class="text-sm font-medium text-gray-700">
+    {{ language?.() === 'en'? 'Page' : 'الصفحة' }} {{ currentPage + 1 }}
+  </span>
+
+  <!-- Next -->
+  <button
+    (click)="nextPage()"
+    class="flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
+    [disabled]="blockNext()"
+  >
+{{ '→' }}
+  </button>
+
+</div>
+
+  <!-- Empty State -->
+  <div *ngIf="displayedPlants.length === 0" class="text-center py-12">
+    <p class="text-gray-600 text-lg">
+      {{ language?.() === 'en' ? 'No plants found' : 'لم يتم العثور على نباتات' }}
+    </p>
+  </div>
+
+</div>

@@ -1,0 +1,105 @@
+<!-- Dashboard -->
+<div class="p-8 space-y-8">
+
+  <!-- Header -->
+  <div>
+    <h1 class="text-4xl font-bold text-gray-900 mb-2">
+      {{ language?.() === 'en' ? 'Dashboard' : 'لوحة المعلومات' }}
+    </h1>
+    <p class="text-gray-600">
+      {{ language?.() === 'en' ? 'Overview of your medical plants database' : 'نظرة عامة على قاعدة بيانات النباتات الطبية' }}
+    </p>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div
+      *ngFor="let stat of stats"
+      class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+    >
+      <p class="text-sm text-gray-600 mb-1">{{ getLabel(stat.label, stat.labelAr) }}</p>
+      <h3 class="text-3xl font-bold text-gray-900 mb-4">{{ stat.value }}</h3>
+      <div [class]="'text-3xl mb-4 ' + stat.color">{{ stat.icon }}</div>
+      <div class="flex items-center gap-2 text-xs">
+        <span class="text-green-600 font-semibold">+{{ stat.change }}%</span>
+        <span class="text-gray-600">{{ language?.() === 'en' ? 'this month' : 'هذا الشهر' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Plants -->
+  <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+
+    <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+      <h2 class="text-xl font-bold text-gray-900">
+        {{ language?.() === 'en' ? 'Recent Plants' : 'النباتات الأخيرة' }}
+      </h2>
+      <button class="text-green-600 font-semibold text-sm cursor-pointer border-none bg-transparent hover:underline">
+        {{ language?.() === 'en' ? 'View All' : 'عرض الكل' }}
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ language?.() === 'en' ? 'Name' : 'الاسم' }}</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ language?.() === 'en' ? 'Scientific Name' : 'الاسم العلمي' }}</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ language?.() === 'en' ? 'Added Date' : 'تاريخ الإضافة' }}</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ language?.() === 'en' ? 'Actions' : 'الإجراءات' }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let plant of recentPlants"
+            class="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+          >
+            <td class="px-6 py-4 text-sm">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">{{ plant.image }}</span>
+                <span class="font-semibold text-gray-900">{{ language?.() === 'en' ? plant.name : plant.nameAr }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-700">{{ plant.scientificName }}</td>
+            <td class="px-6 py-4 text-sm text-gray-700">{{ plant.addedDate }}</td>
+            <td class="px-6 py-4 text-sm">
+              <div class="flex gap-2">
+                <button class="px-3 py-1 rounded bg-green-100 text-green-700 font-semibold cursor-pointer border-none transition-colors hover:bg-green-200">
+                  {{ language?.() === 'en' ? 'Edit' : 'تعديل' }}
+                </button>
+                <button class="px-3 py-1 rounded bg-red-100 text-red-700 font-semibold cursor-pointer border-none transition-colors hover:bg-red-200">
+                  {{ language?.() === 'en' ? 'Delete' : 'حذف' }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <button class="bg-green-600 rounded-lg p-6 cursor-pointer border-none transition-all hover:shadow-lg text-left text-white">
+      <span class="text-3xl block mb-3">🌿</span>
+      <h3 class="font-bold text-lg mb-1">{{ language?.() === 'en' ? 'Add New Plant' : 'إضافة نبات جديد' }}</h3>
+      <p class="text-sm opacity-80">{{ language?.() === 'en' ? 'Create a new medicinal plant entry' : 'إنشاء إدخال نبات طبي جديد' }}</p>
+    </button>
+
+    <button class="bg-amber-600 rounded-lg p-6 cursor-pointer border-none transition-all hover:shadow-lg text-left text-white">
+      <span class="text-3xl block mb-3">💊</span>
+      <h3 class="font-bold text-lg mb-1">{{ language?.() === 'en' ? 'Create Remedy' : 'إنشاء علاج' }}</h3>
+      <p class="text-sm opacity-80">{{ language?.() === 'en' ? 'Prepare a new herbal remedy' : 'تحضير علاج عشبي جديد' }}</p>
+    </button>
+
+    <button class="bg-green-500 rounded-lg p-6 cursor-pointer border-none transition-all hover:shadow-lg text-left text-white">
+      <span class="text-3xl block mb-3">🩺</span>
+      <h3 class="font-bold text-lg mb-1">{{ language?.() === 'en' ? 'Manage Diseases' : 'إدارة الأمراض' }}</h3>
+      <p class="text-sm opacity-80">{{ language?.() === 'en' ? 'Add or edit disease entries' : 'إضافة أو تحرير إدخالات الأمراض' }}</p>
+    </button>
+
+  </div>
+
+</div>

@@ -1,0 +1,163 @@
+<div *ngIf="showForm()" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-lg border border-gray-200 shadow-sm w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+
+    <!-- Header -->
+    <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-gray-900">
+          {{ language() === 'en' ? (diseaseToUpdate()!=null ? 'Edit Disease' : 'Add New Disease') : (diseaseToUpdate()!=null ? 'تعديل المرض' : 'إضافة مرض جديد') }}
+        </h2>
+        <p class="text-sm text-gray-600 mt-0.5">
+          {{ language() === 'en' ? 'Fill in the details below' : 'أدخل التفاصيل أدناه' }}
+        </p>
+      </div>
+      <button (click)="onClose()" class="text-gray-400 hover:text-gray-600 text-2xl cursor-pointer border-none bg-transparent transition-colors leading-none">✕</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 space-y-6">
+
+      <!-- Name -->
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-gray-600 uppercase">
+          {{ language() === 'en' ? 'Disease Name' : 'اسم المرض' }}
+        </label>
+        <input
+          type="text"
+          [(ngModel)]="form.name"
+          [placeholder]="language() === 'en' ? 'e.g. Diabetes' : 'مثال: السكري'"
+          class="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 text-sm"
+        />
+      </div>
+
+      <!-- Description -->
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-gray-600 uppercase">
+          {{ language() === 'en' ? 'Description' : 'الوصف' }}
+        </label>
+        <textarea
+          [(ngModel)]="form.description"
+          [placeholder]="language() === 'en' ? 'Describe the disease...' : 'صف المرض...'"
+          rows="3"
+          class="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 text-sm resize-none"
+        ></textarea>
+      </div>
+
+      <!-- Symptoms -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-semibold text-gray-600 uppercase">
+            {{ language() === 'en' ? 'Symptoms' : 'الأعراض' }}
+          </label>
+          <button (click)="addItem('symptoms')" class="text-xs font-semibold text-green-600 cursor-pointer border-none bg-transparent hover:underline">
+            {{ language() === 'en' ? '+ Add' : '+ إضافة' }}
+          </button>
+        </div>
+        <div class="flex flex-wrap gap-2 p-3 rounded-lg border border-gray-300 min-h-12 cursor-text" (click)="symptomInput.focus()">
+          <span
+            *ngFor="let item of form.symptoms; let i = index"
+            class="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-semibold"
+          >
+            {{ item }}
+            <button (click)="removeItem('symptoms', i)" class="text-red-400 hover:text-red-800 border-none bg-transparent cursor-pointer leading-none text-xs">✕</button>
+          </span>
+          <input
+            #symptomInput
+            type="text"
+            [(ngModel)]="drafts.symptom"
+            (keydown.enter)="commitDraft('symptoms', 'symptom')"
+            (keydown.comma)="commitDraft('symptoms', 'symptom')"
+            [placeholder]="form.symptoms.length === 0 ? (language() === 'en' ? 'Type and press Enter...' : 'اكتب واضغط Enter...') : ''"
+            class="flex-1 min-w-24 border-none outline-none text-sm text-gray-900 placeholder-gray-400 bg-transparent"
+          />
+        </div>
+      </div>
+
+      <!-- Complications -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-semibold text-gray-600 uppercase">
+            {{ language() === 'en' ? 'Complications' : 'المضاعفات' }}
+          </label>
+          <button (click)="addItem('complications')" class="text-xs font-semibold text-green-600 cursor-pointer border-none bg-transparent hover:underline">
+            {{ language() === 'en' ? '+ Add' : '+ إضافة' }}
+          </button>
+        </div>
+        <div class="flex flex-wrap gap-2 p-3 rounded-lg border border-gray-300 min-h-12 cursor-text" (click)="complicationInput.focus()">
+          <span
+            *ngFor="let item of form.complications; let i = index"
+            class="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-semibold"
+          >
+            {{ item }}
+            <button (click)="removeItem('complications', i)" class="text-amber-400 hover:text-amber-800 border-none bg-transparent cursor-pointer leading-none text-xs">✕</button>
+          </span>
+          <input
+            #complicationInput
+            type="text"
+            [(ngModel)]="drafts.complication"
+            (keydown.enter)="commitDraft('complications', 'complication')"
+            (keydown.comma)="commitDraft('complications', 'complication')"
+            [placeholder]="form.complications.length === 0 ? (language() === 'en' ? 'Type and press Enter...' : 'اكتب واضغط Enter...') : ''"
+            class="flex-1 min-w-24 border-none outline-none text-sm text-gray-900 placeholder-gray-400 bg-transparent"
+          />
+        </div>
+      </div>
+
+      <!-- Prevention -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-semibold text-gray-600 uppercase">
+            {{ language() === 'en' ? 'Prevention' : 'الوقاية' }}
+          </label>
+          <button (click)="addItem('prevention')" class="text-xs font-semibold text-green-600 cursor-pointer border-none bg-transparent hover:underline">
+            {{ language() === 'en' ? '+ Add' : '+ إضافة' }}
+          </button>
+        </div>
+        <div class="flex flex-wrap gap-2 p-3 rounded-lg border border-gray-300 min-h-12 cursor-text" (click)="preventionInput.focus()">
+          <span
+            *ngFor="let item of form.prevention; let i = index"
+            class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-semibold"
+          >
+            {{ item }}
+            <button (click)="removeItem('prevention', i)" class="text-green-500 hover:text-green-800 border-none bg-transparent cursor-pointer leading-none text-xs">✕</button>
+          </span>
+          <input
+            #preventionInput
+            type="text"
+            [(ngModel)]="drafts.prevention"
+            (keydown.enter)="commitDraft('prevention', 'prevention')"
+            (keydown.comma)="commitDraft('prevention', 'prevention')"
+            [placeholder]="form.prevention.length === 0 ? (language() === 'en' ? 'Type and press Enter...' : 'اكتب واضغط Enter...') : ''"
+            class="flex-1 min-w-24 border-none outline-none text-sm text-gray-900 placeholder-gray-400 bg-transparent"
+          />
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="p-6 border-t border-gray-200 flex gap-3 justify-end">
+      <button
+        (click)="onClose()"
+        [disabled]="isSaving"
+        class="px-6 py-3 rounded-lg font-semibold text-sm cursor-pointer border border-gray-300 bg-transparent text-gray-700 transition-all hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {{ language() === 'en' ? 'Cancel' : 'إلغاء' }}
+      </button>
+      <button
+        (click)="save()"
+        [disabled]="isSaving"
+        class="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold text-sm cursor-pointer border-none transition-all hover:bg-green-700 disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2 min-w-32 justify-center"
+      >
+        <span *ngIf="isSaving" style="display:inline-block;width:.9rem;height:.9rem;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;"></span>
+        <span>
+          {{ isSaving
+            ? (language() === 'en' ? 'Saving...' : 'جاري الحفظ...')
+            : (language() === 'en' ? (diseaseToUpdate()!=null ? 'Update' : 'Add Disease') : (diseaseToUpdate() != null ? 'تعديل' : 'إضافة المرض'))
+          }}
+        </span>
+      </button>
+    </div>
+
+  </div>
+</div>

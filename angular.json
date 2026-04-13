@@ -32,8 +32,12 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/tw-animate-css/dist/tw-animate.css"
             ],
+            "stylePreprocessorOptions": {
+  "includePaths": ["src/styles"]
+},
             "scripts": []
           },
           "configurations": {
@@ -98,5 +102,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
